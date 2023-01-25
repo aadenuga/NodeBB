@@ -17,7 +17,7 @@ const meta_1 = __importDefault(require("../meta"));
 const plugins_1 = __importDefault(require("../plugins"));
 const slugify_1 = __importDefault(require("../slugify"));
 const database_1 = __importDefault(require("../database"));
-module.exports = function (Groups) {
+exports.default = (Groups) => {
     Groups.create = function (data) {
         return __awaiter(this, void 0, void 0, function* () {
             const isSystem = isSystemGroup(data);

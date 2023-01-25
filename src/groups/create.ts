@@ -5,7 +5,7 @@ import plugins from '../plugins';
 import slugify from '../slugify';
 import db from '../database';
 
-module.exports = function (Groups) {
+export default (Groups) => {
     Groups.create = async function (data) {
         const isSystem = isSystemGroup(data);
         const timestamp = data.timestamp || Date.now();
@@ -92,4 +92,4 @@ module.exports = function (Groups) {
             throw new Error('[[error:invalid-group-name]]');
         }
     };
-};
+ };
