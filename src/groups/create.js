@@ -29,6 +29,9 @@ exports.default = (Groups) => {
             const disableLeave = parseInt(data.disableLeave, 10) === 1 ? 1 : 0;
             const isHidden = parseInt(data.hidden, 10) === 1;
             Groups.validateGroupName(data.name);
+            // const exists = await meta.userOrGroupExists(data.name); - original line 25
+            // The next line calls a function in a module that has not been updated to TS yet
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
             const exists = yield meta_1.default.userOrGroupExists(data.name);
             if (exists) {
                 throw new Error('[[error:group-already-exists]]');

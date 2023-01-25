@@ -5,8 +5,22 @@ import plugins from '../plugins';
 import slugify from '../slugify';
 import db from '../database';
 
+interface data {
+    disableJoinRequests: string,
+    timestamp: number,
+    name: string,
+    hidden: string,
+    disableLeave: string,
+    userTitleEnabled: string,
+    description: string,
+    private: string,
+    userTitle: string,
+    ownerUid: string,
+    system: boolean
+}
+
 export default (Groups) => {
-    Groups.create = async function (data) {
+    Groups.create = async function (data: data) {
         const isSystem = isSystemGroup(data);
         const timestamp = data.timestamp || Date.now();
         let disableJoinRequests = parseInt(data.disableJoinRequests, 10) === 1 ? 1 : 0;
@@ -18,7 +32,10 @@ export default (Groups) => {
 
         Groups.validateGroupName(data.name);
 
-        const exists = await meta.userOrGroupExists(data.name);
+        // const exists = await meta.userOrGroupExists(data.name); - original line 25
+        // The next line calls a function in a module that has not been updated to TS yet
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+        const exists: string[] = await meta.userOrGroupExists(data.name) as string[];
         if (exists) {
             throw new Error('[[error:group-already-exists]]');
         }
@@ -71,7 +88,7 @@ export default (Groups) => {
             Groups.isPrivilegeGroup(data.name);
     }
 
-    Groups.validateGroupName = function (name) {
+    Groups.validateGroupName = function (name: string) {
         if (!name) {
             throw new Error('[[error:group-name-too-short]]');
         }
@@ -92,4 +109,4 @@ export default (Groups) => {
             throw new Error('[[error:invalid-group-name]]');
         }
     };
- };
+};
