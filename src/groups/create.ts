@@ -1,9 +1,9 @@
-'use strict';
+// 'use strict';
 
-const meta = require('../meta');
-const plugins = require('../plugins');
-const slugify = require('../slugify');
-const db = require('../database');
+import meta from '../meta';
+import plugins from '../plugins';
+import slugify from '../slugify';
+import db from '../database';
 
 module.exports = function (Groups) {
     Groups.create = async function (data) {
