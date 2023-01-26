@@ -94,7 +94,9 @@ export default (Groups: Groups) => {
         await plugins.hooks.fire('filter:group.create', { group: groupData, data: data });
 
         // The next line calls a function in a module that has not been updated to TS yet
+        /* eslint-disable max-len */
         /* eslint-disable @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call, @typescript-eslint/await-thenable */
+        /* eslint-enable max-len */
         await db.sortedSetAdd('groups:createtime', groupData.createtime, groupData.name);
 
         await db.setObject(`group:${groupData.name}`, groupData);
@@ -117,8 +119,9 @@ export default (Groups: Groups) => {
         plugins.hooks.fire('action:group.create', { group: groupData });
         return groupData;
     };
-    /* eslint-enable @typescript-eslint/no-floating-promises, @typescript-eslint/no-unsafe-call, @typescript-eslint/await-thenable */
-
+    /* eslint-disable max-len */
+    /* eslint-enable @typescript-eslint/no-floating-promises, @typescript-eslint/no-unsafe-call, @typescript-eslint/await-thenable  */
+    /* eslint-enable max-len */
     Groups.validateGroupName = function (name: string) {
         if (!name) {
             throw new Error('[[error:group-name-too-short]]');
