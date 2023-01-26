@@ -18,6 +18,7 @@ const plugins_1 = __importDefault(require("../plugins"));
 const slugify_1 = __importDefault(require("../slugify"));
 const database_1 = __importDefault(require("../database"));
 exports.default = (Groups) => {
+    // eslint-disable-next-line @typescript-eslint/no-misused-promises
     Groups.create = function (data) {
         return __awaiter(this, void 0, void 0, function* () {
             function isSystemGroup(data) {
@@ -42,6 +43,7 @@ exports.default = (Groups) => {
             const isPrivate = data.hasOwnProperty('private') && data.private !== undefined ? parseInt(data.private, 10) === 1 : true;
             let groupData = {
                 name: data.name,
+                /* eslint-disable @typescript-eslint/no-unsafe-assignment */
                 slug: (0, slugify_1.default)(data.name),
                 createtime: timestamp,
                 userTitle: data.userTitle || data.name,
@@ -74,6 +76,7 @@ exports.default = (Groups) => {
             }
             yield database_1.default.default.setObjectField('groupslug:groupname', groupData.slug, groupData.name);
             groupData = yield Groups.getGroupData(groupData.name);
+            // eslint-disable-next-line @typescript-eslint/no-floating-promises
             plugins_1.default.hooks.fire('action:group.create', { group: groupData });
             return groupData;
         });

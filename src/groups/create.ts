@@ -52,6 +52,7 @@ interface Groups {
 
 
 export default (Groups: Groups) => {
+    // eslint-disable-next-line @typescript-eslint/no-misused-promises
     Groups.create = async function (data: data): Promise<group> {
         function isSystemGroup(data: data) {
             return data.system || parseInt(data.system, 10) === 1 ||
@@ -78,6 +79,7 @@ export default (Groups: Groups) => {
         const isPrivate = data.hasOwnProperty('private') && data.private !== undefined ? parseInt(data.private, 10) === 1 : true;
         let groupData = {
             name: data.name,
+            /* eslint-disable @typescript-eslint/no-unsafe-assignment */
             slug: slugify(data.name),
             createtime: timestamp,
             userTitle: data.userTitle || data.name,
@@ -116,6 +118,7 @@ export default (Groups: Groups) => {
 
         await db.default.setObjectField('groupslug:groupname', groupData.slug, groupData.name);
         groupData = await Groups.getGroupData(groupData.name);
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
         plugins.hooks.fire('action:group.create', { group: groupData });
         return groupData;
     };
