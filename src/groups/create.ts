@@ -16,11 +16,46 @@ interface data {
     private: string,
     userTitle: string,
     ownerUid: string,
-    system: boolean
+    system: string
 }
 
-export default (Groups) => {
-    Groups.create = async function (data: data) {
+interface systemGroups {
+    includes: (name: string) => boolean
+}
+
+
+interface group {
+    name: string,
+    slug: string,
+    createtime: number,
+    userTitle: string,
+    userTitleEnabled: number,
+    description: string,
+    memberCount: number,
+    hidden: number,
+    system: number,
+    private: number,
+    disableJoinRequests: number,
+    disableLeave: number
+}
+
+interface Groups {
+    validateGroupName: (name: string) => void,
+    create: (data: data) => void,
+    // tslint:disable-next-line:max-line-length
+    getGroupData: (name: string) => { name: string; slug: string; createtime: number; userTitle: string; userTitleEnabled: number; description: string; memberCount: number; hidden: number; system: number; private: number; disableJoinRequests: number; disableLeave: number; },
+    isPrivilegeGroup(name: string): boolean,
+    systemGroups: systemGroups
+}
+
+
+export default (Groups: Groups) => {
+    Groups.create = async function (data: data): Promise<group> {
+        function isSystemGroup(data: data) {
+            return data.system || parseInt(data.system, 10) === 1 ||
+                Groups.systemGroups.includes(data.name) ||
+                Groups.isPrivilegeGroup(data.name);
+        }
         const isSystem = isSystemGroup(data);
         const timestamp = data.timestamp || Date.now();
         let disableJoinRequests = parseInt(data.disableJoinRequests, 10) === 1 ? 1 : 0;
@@ -32,10 +67,7 @@ export default (Groups) => {
 
         Groups.validateGroupName(data.name);
 
-        // const exists = await meta.userOrGroupExists(data.name); - original line 25
-        // The next line calls a function in a module that has not been updated to TS yet
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-        const exists: string[] = await meta.userOrGroupExists(data.name) as string[];
+        const exists = await meta.userOrGroupExists(data.name);
         if (exists) {
             throw new Error('[[error:group-already-exists]]');
         }
@@ -75,18 +107,12 @@ export default (Groups) => {
             ]);
         }
 
-        await db.setObjectField('groupslug:groupname', groupData.slug, groupData.name);
+        await db.default.setObjectField('groupslug:groupname', groupData.slug, groupData.name);
 
         groupData = await Groups.getGroupData(groupData.name);
         plugins.hooks.fire('action:group.create', { group: groupData });
         return groupData;
     };
-
-    function isSystemGroup(data) {
-        return data.system === true || parseInt(data.system, 10) === 1 ||
-            Groups.systemGroups.includes(data.name) ||
-            Groups.isPrivilegeGroup(data.name);
-    }
 
     Groups.validateGroupName = function (name: string) {
         if (!name) {

@@ -20,6 +20,11 @@ const database_1 = __importDefault(require("../database"));
 exports.default = (Groups) => {
     Groups.create = function (data) {
         return __awaiter(this, void 0, void 0, function* () {
+            function isSystemGroup(data) {
+                return data.system || parseInt(data.system, 10) === 1 ||
+                    Groups.systemGroups.includes(data.name) ||
+                    Groups.isPrivilegeGroup(data.name);
+            }
             const isSystem = isSystemGroup(data);
             const timestamp = data.timestamp || Date.now();
             let disableJoinRequests = parseInt(data.disableJoinRequests, 10) === 1 ? 1 : 0;
@@ -29,9 +34,6 @@ exports.default = (Groups) => {
             const disableLeave = parseInt(data.disableLeave, 10) === 1 ? 1 : 0;
             const isHidden = parseInt(data.hidden, 10) === 1;
             Groups.validateGroupName(data.name);
-            // const exists = await meta.userOrGroupExists(data.name); - original line 25
-            // The next line calls a function in a module that has not been updated to TS yet
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
             const exists = yield meta_1.default.userOrGroupExists(data.name);
             if (exists) {
                 throw new Error('[[error:group-already-exists]]');
@@ -53,7 +55,7 @@ exports.default = (Groups) => {
                 disableLeave: disableLeave,
             };
             yield plugins_1.default.hooks.fire('filter:group.create', { group: groupData, data: data });
-            yield database_1.default.sortedSetAdd('groups:createtime', groupData.createtime, groupData.name);
+            yield database_1.default.default.sortedSetAdd('groups:createtime', groupData.createtime, groupData.name);
             yield database_1.default.setObject(`group:${groupData.name}`, groupData);
             if (data.hasOwnProperty('ownerUid')) {
                 yield database_1.default.setAdd(`group:${groupData.name}:owners`, data.ownerUid);
@@ -66,17 +68,12 @@ exports.default = (Groups) => {
                     ['groups:visible:name', 0, `${groupData.name.toLowerCase()}:${groupData.name}`],
                 ]);
             }
-            yield database_1.default.setObjectField('groupslug:groupname', groupData.slug, groupData.name);
+            yield database_1.default.default.setObjectField('groupslug:groupname', groupData.slug, groupData.name);
             groupData = yield Groups.getGroupData(groupData.name);
             plugins_1.default.hooks.fire('action:group.create', { group: groupData });
             return groupData;
         });
     };
-    function isSystemGroup(data) {
-        return data.system === true || parseInt(data.system, 10) === 1 ||
-            Groups.systemGroups.includes(data.name) ||
-            Groups.isPrivilegeGroup(data.name);
-    }
     Groups.validateGroupName = function (name) {
         if (!name) {
             throw new Error('[[error:group-name-too-short]]');
