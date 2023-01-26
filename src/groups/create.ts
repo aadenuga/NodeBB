@@ -42,8 +42,10 @@ interface group {
 interface Groups {
     validateGroupName: (name: string) => void,
     create: (data: data) => void,
-    // tslint:disable-next-line:max-line-length
+    /* eslint-disable max-len */
     getGroupData: (name: string) => { name: string; slug: string; createtime: number; userTitle: string; userTitleEnabled: number; description: string; memberCount: number; hidden: number; system: number; private: number; disableJoinRequests: number; disableLeave: number; },
+    /* eslint-enable max-len */
+
     isPrivilegeGroup(name: string): boolean,
     systemGroups: systemGroups
 }
@@ -92,9 +94,9 @@ export default (Groups: Groups) => {
         await plugins.hooks.fire('filter:group.create', { group: groupData, data: data });
 
         // The next line calls a function in a module that has not been updated to TS yet
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-member-access
-        await db.sortedSetAdd('groups:createtime', groupData.createtime, groupData.name);  
-        
+        /* eslint-disable @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call, @typescript-eslint/await-thenable */
+        await db.sortedSetAdd('groups:createtime', groupData.createtime, groupData.name);
+
         await db.setObject(`group:${groupData.name}`, groupData);
 
         if (data.hasOwnProperty('ownerUid')) {
@@ -111,11 +113,11 @@ export default (Groups: Groups) => {
         }
 
         await db.default.setObjectField('groupslug:groupname', groupData.slug, groupData.name);
-
         groupData = await Groups.getGroupData(groupData.name);
         plugins.hooks.fire('action:group.create', { group: groupData });
         return groupData;
     };
+    /* eslint-enable @typescript-eslint/no-floating-promises, @typescript-eslint/no-unsafe-call, @typescript-eslint/await-thenable */
 
     Groups.validateGroupName = function (name: string) {
         if (!name) {

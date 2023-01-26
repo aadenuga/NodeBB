@@ -56,7 +56,7 @@ exports.default = (Groups) => {
             };
             yield plugins_1.default.hooks.fire('filter:group.create', { group: groupData, data: data });
             // The next line calls a function in a module that has not been updated to TS yet
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-member-access
+            /* eslint-disable @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call, @typescript-eslint/await-thenable */
             yield database_1.default.sortedSetAdd('groups:createtime', groupData.createtime, groupData.name);
             yield database_1.default.setObject(`group:${groupData.name}`, groupData);
             if (data.hasOwnProperty('ownerUid')) {
@@ -76,6 +76,7 @@ exports.default = (Groups) => {
             return groupData;
         });
     };
+    /*eslint-enable @typescript-eslint/no-floating-promises,@typescript-eslint/no-unsafe-call,@typescript-eslint/await-thenable*/
     Groups.validateGroupName = function (name) {
         if (!name) {
             throw new Error('[[error:group-name-too-short]]');
