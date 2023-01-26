@@ -55,7 +55,9 @@ exports.default = (Groups) => {
                 disableLeave: disableLeave,
             };
             yield plugins_1.default.hooks.fire('filter:group.create', { group: groupData, data: data });
-            yield database_1.default.default.sortedSetAdd('groups:createtime', groupData.createtime, groupData.name);
+            // The next line calls a function in a module that has not been updated to TS yet
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-member-access
+            yield database_1.default.sortedSetAdd('groups:createtime', groupData.createtime, groupData.name);
             yield database_1.default.setObject(`group:${groupData.name}`, groupData);
             if (data.hasOwnProperty('ownerUid')) {
                 yield database_1.default.setAdd(`group:${groupData.name}:owners`, data.ownerUid);

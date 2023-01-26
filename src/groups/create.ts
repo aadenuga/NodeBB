@@ -67,7 +67,7 @@ export default (Groups: Groups) => {
 
         Groups.validateGroupName(data.name);
 
-        const exists = await meta.userOrGroupExists(data.name);
+        const exists = await meta.userOrGroupExists(data.name) as boolean;
         if (exists) {
             throw new Error('[[error:group-already-exists]]');
         }
@@ -91,7 +91,10 @@ export default (Groups: Groups) => {
 
         await plugins.hooks.fire('filter:group.create', { group: groupData, data: data });
 
-        await db.sortedSetAdd('groups:createtime', groupData.createtime, groupData.name);
+        // The next line calls a function in a module that has not been updated to TS yet
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-member-access
+        await db.sortedSetAdd('groups:createtime', groupData.createtime, groupData.name);  
+        
         await db.setObject(`group:${groupData.name}`, groupData);
 
         if (data.hasOwnProperty('ownerUid')) {
