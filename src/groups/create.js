@@ -12,12 +12,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
-Object.defineProperty(exports, "__esModule", { value: true });
 const meta_1 = __importDefault(require("../meta"));
 const plugins_1 = __importDefault(require("../plugins"));
 const slugify_1 = __importDefault(require("../slugify"));
 const database_1 = __importDefault(require("../database"));
-exports.default = (Groups) => {
+module.exports = function (Groups) {
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
     Groups.create = function (data) {
         return __awaiter(this, void 0, void 0, function* () {

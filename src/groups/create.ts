@@ -50,8 +50,7 @@ interface Groups {
     systemGroups: systemGroups
 }
 
-
-export default (Groups: Groups) => {
+export = function (Groups: Groups) {
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
     Groups.create = async function (data: data): Promise<group> {
         function isSystemGroup(data: data) {
